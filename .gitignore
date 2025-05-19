@@ -52,3 +52,11 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Visual Studio IDE
+.vs/
+*.user
+*.suo
+*.vspx
+*.vsidx
+*.vsscc
