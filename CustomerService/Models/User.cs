@@ -13,5 +13,8 @@ namespace CustomerService.Models
         public string Email { get; set; }
         public string Password { get; set; }
         public List<string> Inbox { get; set; } = new();
+        public int BookingCount { get; set; } = 0;
+        public bool HasReceivedDiscount { get; set; } = false;
+
     }
 }

@@ -1,4 +1,5 @@
 using BookingService.Data;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<MongoDbContext>();
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingInMemory((ctx, cfg) => cfg.ConfigureEndpoints(ctx));
+});
 
 var app = builder.Build();
 
