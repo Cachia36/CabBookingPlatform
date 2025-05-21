@@ -1,4 +1,4 @@
-﻿using BookingService.Contarcts;
+﻿using Shared.Contracts;
 using BookingService.Data;
 using BookingService.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -12,26 +12,34 @@ namespace BookingService.Controllers
     public class BookingController : ControllerBase
     {
         private readonly MongoDbContext _context;
-        private readonly IPublishEndpoint _publishEndpoint;
-        public BookingController(MongoDbContext context, IPublishEndpoint publishEndpoint)
+        private readonly ISendEndpointProvider _sendEndpointProvider;
+        public BookingController(MongoDbContext context, ISendEndpointProvider sendEndpointProvider)
         {
             _context = context;
-            _publishEndpoint = publishEndpoint;
+            _sendEndpointProvider = sendEndpointProvider;
         }
 
         [HttpPost("create")]
         public async Task<IActionResult> CreateBooking([FromBody] Booking booking)
         {
-            await _context.Bookings.InsertOneAsync(booking);
-
-            await _publishEndpoint.Publish(new BookingCompletedEvent
+            try
             {
-                UserId = booking.UserId,
-                BookingId = booking.Id!,
-                CompletedAt = DateTime.UtcNow
-            });
+                await _context.Bookings.InsertOneAsync(booking);
+                var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:BookingCompleted"));
+                await endpoint.Send(new BookingCompletedEvent
+                {
+                    UserId = booking.UserId,
+                    BookingId = booking.Id!,
+                    CompletedAt = DateTime.UtcNow
+                });
 
-            return Ok("Booking created successfully");
+                return Ok("Booking created successfully");
+            } 
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Booking creation failed: {ex.Message}");
+            }
+
         }
         [HttpGet("current/{userId}")]
         public async Task<IActionResult> GetCurrentBookings(string userId)

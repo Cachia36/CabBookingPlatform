@@ -12,8 +12,20 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<MongoDbContext>();
 builder.Services.AddMassTransit(x =>
 {
-    x.UsingInMemory((ctx, cfg) => cfg.ConfigureEndpoints(ctx));
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h =>
+        {
+            h.Username("guest");
+            h.Password("guest");
+        });
+
+        cfg.ConfigureEndpoints(context);
+    });
 });
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 

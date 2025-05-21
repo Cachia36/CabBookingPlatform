@@ -1,13 +1,7 @@
 ﻿using MassTransit;
 using MongoDB.Driver;
-using CustomerService.Data;       
-
-public class BookingCompletedEvent
-{
-    public string UserId { get; set; } = string.Empty;
-    public string BookingId { get; set; } = string.Empty;
-    public DateTime CompletedAt { get; set; }
-}
+using CustomerService.Data;
+using Shared.Contracts;
 
 public class BookingCompletedConsumer : IConsumer<BookingCompletedEvent>
 {
@@ -20,21 +14,31 @@ public class BookingCompletedConsumer : IConsumer<BookingCompletedEvent>
 
     public async Task Consume(ConsumeContext<BookingCompletedEvent> context)
     {
+        Console.WriteLine("BookingCompletedConsumer hit");
+
         var userId = context.Message.UserId;
+        Console.WriteLine($"Event for user: {userId}");
+
         var user = await _context.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
 
-        if (user == null) return;
+        if (user == null)
+        {
+            Console.WriteLine("User not found");
+            return;
+        }
 
-        if (user.HasReceivedDiscount) return;
+        Console.WriteLine($"Found user: {user.Email}");
 
         user.BookingCount++;
 
-        if (user.BookingCount > 3)
+        if (user.BookingCount == 3 && !user.HasReceivedDiscount)
         {
             user.HasReceivedDiscount = true;
-            user.Inbox.Add("Discount available!");
+            user.Inbox.Add("You've unlocked a discount on your next ride!");
+            Console.WriteLine("Discount granted!");
         }
 
         await _context.Users.ReplaceOneAsync(u => u.Id == userId, user);
     }
+
 }

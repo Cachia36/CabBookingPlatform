@@ -15,6 +15,5 @@ namespace CustomerService.Models
         public List<string> Inbox { get; set; } = new();
         public int BookingCount { get; set; } = 0;
         public bool HasReceivedDiscount { get; set; } = false;
-
     }
 }

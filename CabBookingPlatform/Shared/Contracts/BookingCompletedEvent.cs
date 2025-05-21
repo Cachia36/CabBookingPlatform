@@ -1,4 +1,4 @@
-﻿namespace BookingService.Contarcts
+﻿namespace Shared.Contracts
 {
     public class BookingCompletedEvent
     {
