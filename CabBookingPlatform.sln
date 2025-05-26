@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34818.151
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Shared", "Shared\Shared.shproj", "{94AFE129-0C12-4174-B472-2C8100C872F4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingService", "BookingService\BookingService.csproj", "{2F3EFCEE-394B-46E1-A85A-0FF24394CD2E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomerService", "CustomerService\CustomerService.csproj", "{0F801C9B-0179-4740-A00B-B33555A83826}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FareEstimationService", "FareEstimationService\FareEstimationService.csproj", "{71862E3C-F706-41F0-8736-0572ED4463B8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocationService", "LocationService\LocationService.csproj", "{EF5F7541-E318-4EEE-B240-015175DA00C4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PaymentService", "PaymentService\PaymentService.csproj", "{EF7DA135-8BF3-4351-88F3-9170DBE6C348}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2C5A8CB7-FFE1-40D4-9889-4B63D70A4A1F}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		docker-compose.yml = docker-compose.yml
+		Dockerfile.rabbitmq = Dockerfile.rabbitmq
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F3EFCEE-394B-46E1-A85A-0FF24394CD2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F3EFCEE-394B-46E1-A85A-0FF24394CD2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F3EFCEE-394B-46E1-A85A-0FF24394CD2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F3EFCEE-394B-46E1-A85A-0FF24394CD2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F801C9B-0179-4740-A00B-B33555A83826}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F801C9B-0179-4740-A00B-B33555A83826}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F801C9B-0179-4740-A00B-B33555A83826}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F801C9B-0179-4740-A00B-B33555A83826}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71862E3C-F706-41F0-8736-0572ED4463B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71862E3C-F706-41F0-8736-0572ED4463B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71862E3C-F706-41F0-8736-0572ED4463B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71862E3C-F706-41F0-8736-0572ED4463B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF5F7541-E318-4EEE-B240-015175DA00C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF5F7541-E318-4EEE-B240-015175DA00C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF5F7541-E318-4EEE-B240-015175DA00C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF5F7541-E318-4EEE-B240-015175DA00C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF7DA135-8BF3-4351-88F3-9170DBE6C348}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF7DA135-8BF3-4351-88F3-9170DBE6C348}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF7DA135-8BF3-4351-88F3-9170DBE6C348}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF7DA135-8BF3-4351-88F3-9170DBE6C348}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {44E49F5E-9A54-441A-A47C-FBC83EFABCF8}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Shared\Shared.projitems*{0f801c9b-0179-4740-a00b-b33555a83826}*SharedItemsImports = 5
+		Shared\Shared.projitems*{2f3efcee-394b-46e1-a85a-0ff24394cd2e}*SharedItemsImports = 5
+		Shared\Shared.projitems*{94afe129-0c12-4174-b472-2c8100c872f4}*SharedItemsImports = 13
+	EndGlobalSection
+EndGlobal

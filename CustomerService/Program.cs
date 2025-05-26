@@ -1,6 +1,7 @@
 using Shared.Contracts;
 using CustomerService.Data;
 using MassTransit;
+using CustomerService.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,7 @@ builder.Services.AddSingleton<MongoDbContext>();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<BookingCompletedConsumer>();
-
+    x.AddConsumer<CabReadyConsumer>();
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host("localhost", "/", h =>
@@ -24,11 +25,17 @@ builder.Services.AddMassTransit(x =>
             h.Password("guest");
         });
 
-        // Manually bind consumer to the queue you see in RabbitMQ
         cfg.ReceiveEndpoint("BookingCompleted", e =>
         {
             e.ConfigureConsumer<BookingCompletedConsumer>(context);
         });
+
+        cfg.ReceiveEndpoint("CabReadyEvent", e =>
+        {
+            e.ConfigureConsumer<CabReadyConsumer>(context);
+        });
+
+        cfg.UseDelayedMessageScheduler();
     });
 });
 

@@ -4,6 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>..\CabBookingPlatform</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +19,6 @@
     <Folder Include="Models\" />
   </ItemGroup>
 
-  <Import Project="..\CabBookingPlatform\Shared\Shared.projitems" Label="Shared" />
+  <Import Project="..\Shared\Shared.projitems" Label="Shared" />
 
 </Project>

@@ -33,6 +33,20 @@ namespace BookingService.Controllers
                     CompletedAt = DateTime.UtcNow
                 });
 
+                endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:CabReadyEvent"));
+
+                await endpoint.Send(new CabReadyEvent
+                {
+                    UserId = booking.UserId,
+                    BookingId = booking.Id!,
+                    PickupLocation = booking.StartLocation,
+                    Destination = booking.EndLocation,
+                    ScheduledTime = booking.DateTime
+                }, context =>
+                {
+                    context.Delay = TimeSpan.FromMinutes(1); 
+                });
+
                 return Ok("Booking created successfully");
             } 
             catch (Exception ex)

@@ -20,6 +20,8 @@ builder.Services.AddMassTransit(x =>
             h.Password("guest");
         });
 
+        cfg.UseDelayedMessageScheduler();
+
         cfg.ConfigureEndpoints(context);
     });
 });

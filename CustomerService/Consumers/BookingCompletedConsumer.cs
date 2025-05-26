@@ -14,11 +14,7 @@ public class BookingCompletedConsumer : IConsumer<BookingCompletedEvent>
 
     public async Task Consume(ConsumeContext<BookingCompletedEvent> context)
     {
-        Console.WriteLine("BookingCompletedConsumer hit");
-
         var userId = context.Message.UserId;
-        Console.WriteLine($"Event for user: {userId}");
-
         var user = await _context.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
 
         if (user == null)
@@ -26,9 +22,7 @@ public class BookingCompletedConsumer : IConsumer<BookingCompletedEvent>
             Console.WriteLine("User not found");
             return;
         }
-
-        Console.WriteLine($"Found user: {user.Email}");
-
+ 
         user.BookingCount++;
 
         if (user.BookingCount == 3 && !user.HasReceivedDiscount)
