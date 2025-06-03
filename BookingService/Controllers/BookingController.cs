@@ -44,7 +44,7 @@ namespace BookingService.Controllers
                     ScheduledTime = booking.DateTime
                 }, context =>
                 {
-                    context.Delay = TimeSpan.FromMinutes(1); 
+                    context.Delay = TimeSpan.FromMinutes(3); 
                 });
 
                 return Ok("Booking created successfully");

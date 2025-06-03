@@ -12,10 +12,12 @@ namespace LocationService.Controllers
     public class LocationController : ControllerBase
     {
         private readonly MongoDbContext _context;
+        private readonly IConfiguration _config;
 
-        public LocationController(MongoDbContext context)
+        public LocationController(MongoDbContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
         [HttpPost("add")]
         public async Task<IActionResult> AddLocation([FromBody] Location location)
@@ -56,7 +58,7 @@ namespace LocationService.Controllers
                 RequestUri = new Uri($"https://weatherapi-com.p.rapidapi.com/alerts.json?q={city}"),
                 Headers =
                 {
-                    { "x-rapidapi-key", "edfeedeb79msh11d41a86e6c3e97p14167ejsne433436b7e77" },
+                    { "x-rapidapi-key", _config["RapidApi:Key"]},
                     { "x-rapidapi-host", "weatherapi-com.p.rapidapi.com" },
                 },
             };

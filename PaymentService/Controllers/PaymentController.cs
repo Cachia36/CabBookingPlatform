@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using PaymentService.Data;
 using PaymentService.Models;
+using System.Diagnostics;
+using System.Text.Json;
 
 namespace PaymentService.Controllers
 {
@@ -11,11 +14,12 @@ namespace PaymentService.Controllers
     {
         private readonly MongoDbContext _context;
         private readonly HttpClient _httpClient;
-
-        public PaymentController(MongoDbContext context, IHttpClientFactory httpClientFactory)
+        private readonly IConfiguration _config;
+        public PaymentController(MongoDbContext context, IHttpClientFactory httpClientFactory, IConfiguration config)
         {
             _context = context;
             _httpClient = httpClientFactory.CreateClient();
+            _config = config;
         }
 
         [HttpPost("pay")]
@@ -62,7 +66,49 @@ namespace PaymentService.Controllers
         }
         private async Task<double> GetBaseFareAsync(string start, string end)
         {
-            return 10.0; //for now
+            //1. convert start and end into lat/lng coordinates
+            var (depLat, depLng) = await GetCoordinatesAsync(start);
+            var (arrLat, arrLng) = await GetCoordinatesAsync(end);
+
+            //2. Call FareEstimationService
+            var url = $"https://localhost:7186/api/fareestimation?depLat={depLat}&depLng={depLng}&arrLat={arrLat}&arrLng={arrLng}";
+
+            var response = await _httpClient.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("FareEstimationService error response:");
+                Console.WriteLine(error); 
+                throw new Exception("Failed to retrieve fare from FareEstimationService");
+            }
+
+
+            var json = await response.Content.ReadFromJsonAsync<FareEstimateResult>();
+            return (double)(json?.EstimatedFare ?? 0);
         }
+
+        private async Task<(double lat, double lng)> GetCoordinatesAsync(string location)
+        {
+            string encodedLocation = Uri.EscapeDataString(location);
+            string apiKey = _config["OpenCage:Key"];
+            string url = $"https://api.opencagedata.com/geocode/v1/json?q={encodedLocation}&key={apiKey}";
+
+            var response = await _httpClient.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Failed to convert address to coordinates");
+
+            var json = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+
+            var firstResult = doc.RootElement
+                                 .GetProperty("results")[0]
+                                 .GetProperty("geometry");
+
+            double lat = firstResult.GetProperty("lat").GetDouble();
+            double lng = firstResult.GetProperty("lng").GetDouble();
+
+            return (lat, lng);
+        }
+
     }
 }
