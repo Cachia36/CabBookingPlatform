@@ -1,0 +1,67 @@
+﻿@using WebFrontend.Models;
+@model BookingViewModel;
+@{
+    ViewData["Title"] = "Create Booking";
+    var UserId = Context.Session.GetString("UserId");
+}
+
+<h2>Book a cab</h2>
+
+<form asp-controller="Booking" asp-action="CreateBooking" method="post">
+
+    <div class="form-group" hidden>
+        <input value="@UserId" asp-for="UserId" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="StartLocation">From</label>
+        <input asp-for="StartLocation" class="form-control" />
+        <span asp-validation-for="StartLocation" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="EndLocation">To</label>
+        <input asp-for="EndLocation" class="form-control" />
+        <span asp-validation-for="EndLocation" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DateTime">Date and Time</label>
+        <input asp-for="DateTime" class="form-control" />
+        <span asp-validation-for="DateTime" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PassengerCount">Passengers</label>
+        <input asp-for="PassengerCount" class="form-control" />
+        <span asp-validation-for="PassengerCount" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CabType">Cab Type</label>
+        <select asp-for="CabType" class="form-control">
+            <option value="Economic">Economic</option>
+            <option value="Premium">Premium</option>
+            <option value="Executive">Executive</option>
+        </select>
+        <span asp-validation-for="CabType" class="text-danger"></span>
+    </div>
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <br />
+    <button type="submit" class="btn btn-primary">Book</button>
+</form>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
+    <script>
+        $(document).ready(function () {
+            var successMessage = '@TempData["SuccessMessage"]';
+            if (successMessage) {
+                toastr.success(successMessage);
+            }
+        });
+    </script>
+}

@@ -13,6 +13,6 @@ namespace BookingService.Models
         public string EndLocation { get; set; } = string.Empty;
         public DateTime DateTime { get; set; }
         public int PassengerCount { get; set; }
-        public string CabType { get; set; } = string.Empty; // Economic, Premium, Executive
+        public string CabType { get; set; } = string.Empty; 
     }
 }

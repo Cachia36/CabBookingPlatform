@@ -24,7 +24,16 @@ namespace CustomerService.Consumers
                 return;
             }
 
-            var notification = $"Your cab to {context.Message.Destination} is ready!";
+            var booking = context.Message;
+
+            var notification =
+                $"Your cab is ready for pickup!\n" +
+                $"Booking Details:\n" +
+                $"- Pickup: {booking.StartLocation}\n" +
+                $"- Dropoff: {booking.EndLocation}\n" +
+                $"- Scheduled Time: {booking.DateTime}\n" +
+                $"- Passengers: {booking.PassengerCount}";
+
             user.Inbox.Add(notification);
 
             await _context.Users.ReplaceOneAsync(u => u.Id == user.Id, user);

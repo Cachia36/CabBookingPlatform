@@ -1,0 +1,17 @@
+﻿@model WebFrontend.Models.InboxViewModel
+
+<h2>Inbox</h2>
+
+@if (!Model.Messages.Any())
+{
+    <p>No messages found.</p>
+}
+else
+{
+    <ul>
+        @foreach (var message in Model.Messages)
+        {
+            <li>@message</li>
+        }
+    </ul>
+}

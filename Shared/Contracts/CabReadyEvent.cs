@@ -4,8 +4,10 @@
     {
         public string UserId { get; set; }
         public string BookingId { get; set; }
-        public string PickupLocation { get; set; }
-        public string Destination { get; set; }
-        public DateTime ScheduledTime { get; set; }
+        public string StartLocation { get; set; }
+        public string EndLocation { get; set; }
+        public DateTime DateTime { get; set; }
+        public int PassengerCount {  get; set; }
+        public string CabType {  get; set; }
     }
 }

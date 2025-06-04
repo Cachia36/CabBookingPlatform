@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using CustomerService.Data;
 using Shared.Contracts;
+using CustomerService.Models;
 
 public class BookingCompletedConsumer : IConsumer<BookingCompletedEvent>
 {
@@ -14,12 +15,12 @@ public class BookingCompletedConsumer : IConsumer<BookingCompletedEvent>
 
     public async Task Consume(ConsumeContext<BookingCompletedEvent> context)
     {
-        var userId = context.Message.UserId;
-        var user = await _context.Users.Find(u => u.Id == userId).FirstOrDefaultAsync();
+        Console.WriteLine("BookingCompletedEvent called");
+        var user = await _context.Users.Find(u => u.Id == context.Message.UserId).FirstOrDefaultAsync();
 
         if (user == null)
         {
-            Console.WriteLine("User not found");
+            Console.WriteLine($"User {context.Message.UserId} not found.");
             return;
         }
  
@@ -32,7 +33,6 @@ public class BookingCompletedConsumer : IConsumer<BookingCompletedEvent>
             Console.WriteLine("Discount granted!");
         }
 
-        await _context.Users.ReplaceOneAsync(u => u.Id == userId, user);
+        await _context.Users.ReplaceOneAsync(u => u.Id == user.Id, user);
     }
-
 }

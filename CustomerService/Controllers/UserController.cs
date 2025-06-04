@@ -30,7 +30,7 @@ namespace CustomerService.Controllers
         {
             var user = await _context.Users.Find(u => u.Email == login.Email && u.Password == login.Password).FirstOrDefaultAsync();
             if (user == null) return Unauthorized("Invalid Credentials");
-            return Ok(user);
+            return Ok(new { user.Id });
         }
 
         [HttpGet("{id}")]
@@ -40,6 +40,7 @@ namespace CustomerService.Controllers
             if (user == null) return NotFound();
             return Ok(user);
         }
+
         [HttpGet("{id}/inbox")]
         public async Task<IActionResult> GetInbox(string id)
         {

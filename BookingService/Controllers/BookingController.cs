@@ -4,6 +4,8 @@ using BookingService.Models;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using MassTransit;
+using System.Runtime.InteropServices;
+using MassTransit.Transports;
 
 namespace BookingService.Controllers
 {
@@ -12,10 +14,12 @@ namespace BookingService.Controllers
     public class BookingController : ControllerBase
     {
         private readonly MongoDbContext _context;
+        private readonly IPublishEndpoint _publishEndpoint;
         private readonly ISendEndpointProvider _sendEndpointProvider;
-        public BookingController(MongoDbContext context, ISendEndpointProvider sendEndpointProvider)
+        public BookingController(MongoDbContext context, IPublishEndpoint publishEndpoint, ISendEndpointProvider sendEndpointProvider)
         {
             _context = context;
+            _publishEndpoint = publishEndpoint;
             _sendEndpointProvider = sendEndpointProvider;
         }
 
@@ -24,37 +28,45 @@ namespace BookingService.Controllers
         {
             try
             {
+                Console.WriteLine("Create Booking API Called");
+
                 await _context.Bookings.InsertOneAsync(booking);
-                var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:BookingCompleted"));
-                await endpoint.Send(new BookingCompletedEvent
+
+                await _publishEndpoint.Publish(new BookingCompletedEvent
                 {
                     UserId = booking.UserId,
                     BookingId = booking.Id!,
                     CompletedAt = DateTime.UtcNow
                 });
 
-                endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:CabReadyEvent"));
+                // Delay task unchanged
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(3));
 
-                await endpoint.Send(new CabReadyEvent
-                {
-                    UserId = booking.UserId,
-                    BookingId = booking.Id!,
-                    PickupLocation = booking.StartLocation,
-                    Destination = booking.EndLocation,
-                    ScheduledTime = booking.DateTime
-                }, context =>
-                {
-                    context.Delay = TimeSpan.FromMinutes(3); 
+                    var cabReadyEndpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri("queue:CabReadyEvent"));
+                    await cabReadyEndpoint.Send(new CabReadyEvent
+                    {
+                        UserId = booking.UserId,
+                        BookingId = booking.Id!,
+                        StartLocation = booking.StartLocation,
+                        EndLocation = booking.EndLocation,
+                        DateTime = booking.DateTime,
+                        PassengerCount = booking.PassengerCount,
+                        CabType = booking.CabType
+                    });
+
+                    Console.WriteLine("CabReadyEvent sent after delay");
                 });
 
                 return Ok("Booking created successfully");
-            } 
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Booking creation failed: {ex.Message}");
             }
-
         }
+
         [HttpGet("current/{userId}")]
         public async Task<IActionResult> GetCurrentBookings(string userId)
         {
@@ -64,6 +76,7 @@ namespace BookingService.Controllers
                 .ToListAsync();
             return Ok(bookings);
         }
+
         [HttpGet("past/{userId}")]
         public async Task<IActionResult> GetPastBookings(string userId)
         {

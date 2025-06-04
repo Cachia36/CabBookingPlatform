@@ -1,0 +1,17 @@
+﻿@using WebFrontend.Models;
+@model UserDto
+@{
+    ViewData["Title"] = "My Account";
+}
+
+<h2>My Account Details</h2>
+
+<ul>
+    <li><strong>ID:</strong> @Model.id</li>
+    <li><strong>Email:</strong> @Model.Email</li>
+    <li><strong>First Name:</strong> @Model.FirstName</li>
+    <li><strong>Last Name:</strong> @Model.LastName</li>
+    <li><strong>Has Discount:</strong> @(Model.HasReceivedDiscount ? "Yes" : "No")</li>
+</ul>
+
+<a asp-controller="Account" asp-action="Inbox">Inbox</a>
