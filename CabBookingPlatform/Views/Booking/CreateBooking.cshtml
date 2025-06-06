@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Create Booking";
     var UserId = Context.Session.GetString("UserId");
+    var savedLocations = ViewBag.SavedLocations as List<string>;
 }
 
 <h2>Book a cab</h2>
@@ -14,14 +15,56 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="StartLocation">From</label>
-        <input asp-for="StartLocation" class="form-control" />
+        <label>From (Pickup Location)</label>
+
+        @if (savedLocations != null && savedLocations.Any())
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="PickupOption" id="pickupSaved" checked onclick="togglePickupInput(true)">
+                <label class="form-check-label" for="pickupSaved">Choose from saved locations</label>
+            </div>
+
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" name="PickupOption" id="pickupManual" onclick="togglePickupInput(false)">
+                <label class="form-check-label" for="pickupManual">Enter manually</label>
+            </div>
+
+            <select id="pickupDropdown" class="form-control mb-2" onchange="document.getElementById('StartLocation').value = this.value">
+                @foreach (var location in savedLocations)
+                {
+                    <option value="@location">@location</option>
+                }
+            </select>
+        }
+
+        <input asp-for="StartLocation" id="StartLocation" class="form-control @(savedLocations == null || !savedLocations.Any() ? "" : "d-none")" placeholder="Enter pickup location manually" />
         <span asp-validation-for="StartLocation" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="EndLocation">To</label>
-        <input asp-for="EndLocation" class="form-control" />
+        <label>To (Drop-off Location)</label>
+
+        @if (savedLocations != null && savedLocations.Any())
+        {
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="DropOffOption" id="dropoffSaved" checked onclick="toggleDropOffInput(true)">
+                <label class="form-check-label" for="dropoffSaved">Choose from saved locations</label>
+            </div>
+
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" name="DropOffOption" id="dropoffManual" onclick="toggleDropOffInput(false)">
+                <label class="form-check-label" for="dropoffManual">Enter manually</label>
+            </div>
+
+            <select id="DropoffDropdown" class="form-control mb-2" onchange="document.getElementById('EndLocation').value = this.value">
+                @foreach (var location in savedLocations)
+                {
+                    <option value="@location">@location</option>
+                }
+            </select>
+        }
+
+        <input asp-for="EndLocation" id="EndLocation" class="form-control @(savedLocations == null || !savedLocations.Any() ? "" : "d-none")" placeholder="Enter drop-off location manually" />
         <span asp-validation-for="EndLocation" class="text-danger"></span>
     </div>
 
@@ -53,15 +96,41 @@
 </form>
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
-
     <script>
-        $(document).ready(function () {
-            var successMessage = '@TempData["SuccessMessage"]';
-            if (successMessage) {
-                toastr.success(successMessage);
+        function togglePickupInput(useSaved) {
+            const dropdown = document.getElementById("pickupDropdown");
+            const textInput = document.getElementById("StartLocation");
+            if (useSaved) {
+                dropdown.classList.remove("d-none");
+                textInput.classList.add("d-none");
+                textInput.value = dropdown.value;
+            } else {
+                dropdown.classList.add("d-none");
+                textInput.classList.remove("d-none");
+                textInput.value = "";
             }
+        }
+        // Initialize on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            togglePickupInput(true);
+        });
+
+        function toggleDropOffInput(useSaved) {
+            const dropdown = document.getElementById("DropoffDropdown");
+            const textInput = document.getElementById("EndLocation");
+            if (useSaved) {
+                dropdown.classList.remove("d-none");
+                textInput.classList.add("d-none");
+                textInput.value = dropdown.value;
+            } else {
+                dropdown.classList.add("d-none");
+                textInput.classList.remove("d-none");
+                textInput.value = "";
+            }
+        }
+        // Initialize on page load
+        document.addEventListener("DOMContentLoaded", () => {
+            toggleDropOffInput(true);
         });
     </script>
 }

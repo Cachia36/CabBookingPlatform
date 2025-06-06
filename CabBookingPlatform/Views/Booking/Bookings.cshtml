@@ -1,0 +1,50 @@
+﻿@model List<WebFrontend.Models.BookingViewModel>
+@using System.Text.Json;
+
+<h2>Current Bookings</h2>
+
+@if (!Model.Any())
+{
+    <p>No current bookings.</p>
+}
+else
+{
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Date</th>
+                <th>Cab Type</th>
+                <th>Passengers</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var booking in Model)
+            {
+                <tr>
+                    <td>@booking.StartLocation</td>
+                    <td>@booking.EndLocation</td>
+                    <td>@booking.DateTime.ToString("g")</td>
+                    <td>@booking.CabType</td>
+                    <td>@booking.PassengerCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        $(function () {
+            var message = @Html.Raw(JsonSerializer.Serialize(TempData["SuccessMessage"]));
+            if (message) {
+                toastr.success(message);
+            }
+        });
+    </script>
+}

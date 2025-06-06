@@ -1,0 +1,23 @@
+﻿@using WebFrontend.Models;
+@model Location;
+@{
+    var UserId = Context.Session.GetString("UserId");
+}
+
+<h2>Save your favourite Location!</h2>
+
+<form asp-action="AddFavouriteLocation" method="post">
+
+    <input value="@UserId" asp-for="UserId" class="form-control" hidden />
+
+    <div class="form-group">
+        <label asp-for="City">Save a location</label>
+        <input asp-for="City" class="form-control" />
+        <span asp-validation-for="City" class="text-danger"></span>
+    </div>
+
+    <br />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <button type="submit" class="btn btn-primary">Save Location</button>
+</form>

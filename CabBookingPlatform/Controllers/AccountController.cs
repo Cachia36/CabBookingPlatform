@@ -46,9 +46,7 @@ namespace WebFrontend.Controllers
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
             Console.WriteLine("Logging in");
             var success = await SignUserInAsync(model.Email, model.Password);
@@ -69,6 +67,7 @@ namespace WebFrontend.Controllers
         {
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {

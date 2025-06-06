@@ -1,4 +1,4 @@
-using CabBookingPlatform.Models;
+using WebFrontend.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

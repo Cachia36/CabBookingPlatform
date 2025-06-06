@@ -2,16 +2,54 @@
 @model UserDto
 @{
     ViewData["Title"] = "My Account";
+    var bookingsUntilDiscount = 3 - Model.BookingCount;
 }
 
 <h2>My Account Details</h2>
 
-<ul>
-    <li><strong>ID:</strong> @Model.id</li>
-    <li><strong>Email:</strong> @Model.Email</li>
-    <li><strong>First Name:</strong> @Model.FirstName</li>
-    <li><strong>Last Name:</strong> @Model.LastName</li>
-    <li><strong>Has Discount:</strong> @(Model.HasReceivedDiscount ? "Yes" : "No")</li>
-</ul>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow rounded-4">
+                <div class="card-header bg-primary text-white rounded-top-4">
+                    <h4 class="mb-0">My Account Details</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">ID</dt>
+                        <dd class="col-sm-8">@Model.id</dd>
 
-<a asp-controller="Account" asp-action="Inbox">Inbox</a>
+                        <dt class="col-sm-4">Email</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+
+                        <dt class="col-sm-4">First Name</dt>
+                        <dd class="col-sm-8">@Model.FirstName</dd>
+
+                        <dt class="col-sm-4">Last Name</dt>
+                        <dd class="col-sm-8">@Model.LastName</dd>
+
+                        <dt class="col-sm-4">Number of bookings</dt>
+                        <dd class="col-sm-8">@Model.BookingCount</dd>
+
+                        <dt class="col-sm-4">Has Discount</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.HasReceivedDiscount)
+                            {
+                                <span class="badge bg-success">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">No</span>
+                                <p>Book @bookingsUntilDiscount more times for a discount!</p>
+                            }
+                        </dd>
+
+                    </dl>
+                </div>
+                <div class="card-footer text-end">
+                    <a href="/Account/Inbox" class="btn btn-outline-primary btn-sm">View Inbox</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

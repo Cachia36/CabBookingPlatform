@@ -18,7 +18,7 @@ namespace GatewayAPI.Controllers
         {
             var response = await _proxy.ForwardAsync("Customer", "api/User/register", HttpMethod.Post, payload);
             var content = await response.Content.ReadAsStringAsync();
-            return Content(content, "application/json");
+            return Content(content, "text/plain");
         }
 
         [HttpPost("login")]

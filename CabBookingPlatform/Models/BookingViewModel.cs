@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CabBookingPlatform.Models
+namespace WebFrontend.Models
 {
     public class BookingViewModel
     {

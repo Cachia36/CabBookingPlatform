@@ -1,4 +1,4 @@
-namespace CabBookingPlatform.Models
+namespace WebFrontend.Models
 {
     public class ErrorViewModel
     {
