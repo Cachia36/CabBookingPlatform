@@ -25,11 +25,13 @@ namespace WebFrontend.Controllers
 
             //Retrieve Saved Locations
             var baseUrl = _config["GatewayService:BaseUrl"];
-            var response = await _httpClient.GetAsync($"{baseUrl}/Location/{userId}");
+            ViewBag.GatewayBaseUrl = baseUrl;
 
-            if (response.IsSuccessStatusCode)
+            var SavedLocationsResponse = await _httpClient.GetAsync($"{baseUrl}/Location/{userId}");
+
+            if (SavedLocationsResponse.IsSuccessStatusCode)
             {
-                var json = await response.Content.ReadAsStringAsync();
+                var json = await SavedLocationsResponse.Content.ReadAsStringAsync();
                 var locationObjects = JsonSerializer.Deserialize<List<Location>>(json);
                 var cityNames = locationObjects?.Select(l => l.City).ToList();
                 ViewBag.SavedLocations = cityNames ?? new List<string>();
@@ -44,32 +46,81 @@ namespace WebFrontend.Controllers
         }
         
         [HttpPost]
-        public async Task<IActionResult> CreateBooking(BookingViewModel model)
+        public async Task<IActionResult> CreateBooking([FromForm] BookingViewModel model)
         {
-            var userId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
-                return RedirectToAction("Login", "Account");
-
             if (!ModelState.IsValid)
             {
+                Console.WriteLine("ModelState is invalid:");
+                foreach (var entry in ModelState)
+                {
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        Console.WriteLine($"Key: {entry.Key}, Error: {error.ErrorMessage}");
+                    }
+                }
+
+                var userId = HttpContext.Session.GetString("UserId");
                 await PopulateSavedLocations(userId);
                 return View(model);
             }
 
             var baseUrl = _config["GatewayService:BaseUrl"];
-            var response = await _httpClient.PostAsJsonAsync($"{baseUrl}/Booking/create", model);
+            model.UserId = HttpContext.Session.GetString("UserId");
 
-            if (response.IsSuccessStatusCode)
+            var bookingResponse = await _httpClient.PostAsJsonAsync($"{baseUrl}/booking/create", model);
+
+            if (!bookingResponse.IsSuccessStatusCode)
             {
-                TempData["SuccessMessage"] = "Booking created successfully!";
+                var error = await bookingResponse.Content.ReadAsStringAsync();
+                ModelState.AddModelError(string.Empty, $"Booking failed: {error}");
+                Console.WriteLine("Booking failed");
+                return View(model);
+            }
+
+            var bookingResult = await bookingResponse.Content.ReadFromJsonAsync<BookingResponseModel>();
+
+            if (bookingResult == null || string.IsNullOrEmpty(bookingResult.BookingId))
+            {
+                TempData["Message"] = "Booking was created but no ID was returned.";
+                Console.WriteLine("Booking was created but no ID was returned");
                 return RedirectToAction("Bookings", "Booking");
             }
 
-            var error = await response.Content.ReadAsStringAsync();
-            ModelState.AddModelError(string.Empty, $"Booking failed: {error}");
-            return View(model);
+            var payment = new Payment
+            {
+                UserId = model.UserId,
+                BookingId = bookingResult.BookingId,
+                TotalPrice = model.TotalPrice
+            };
+
+            bool paymentSuccess = await CreatePaymentAsync(payment);
+
+            if (!paymentSuccess)
+            {
+                TempData["Message"] = "Booking succeeded, but payment failed.";
+                return RedirectToAction("Bookings", "Booking");
+            }
+
+            TempData["SuccessMessage"] = "Booking and payment completed successfully!";
+            return RedirectToAction("Bookings", "Booking");
+
         }
-        
+
+        public async Task<bool> CreatePaymentAsync(Payment payment)
+        {
+            var baseUrl = _config["GatewayService:BaseUrl"];
+
+            var response = await _httpClient.PostAsJsonAsync($"{baseUrl}/Payment/pay", payment);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Payment failed: " + await response.Content.ReadAsStringAsync());
+                return false;
+            }
+
+            return true;
+        }
+
         [HttpGet]
         public async Task<IActionResult> Bookings()
         {

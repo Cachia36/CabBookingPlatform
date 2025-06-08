@@ -69,9 +69,9 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="DateTime">Date and Time</label>
-        <input asp-for="DateTime" class="form-control" />
-        <span asp-validation-for="DateTime" class="text-danger"></span>
+        <label asp-for="RideDateTime">Date and Time</label>
+        <input asp-for="RideDateTime" class="form-control" type="datetime-local" />
+        <span asp-validation-for="RideDateTime" class="text-danger"></span>
     </div>
 
     <div class="form-group">
@@ -90,9 +90,21 @@
         <span asp-validation-for="CabType" class="text-danger"></span>
     </div>
 
+    <div class="form-group">
+        <input asp-for="TotalPrice" id="TotalPrice" hidden />
+    </div>
+
+    <div class="form-group">
+        <input asp-for="BaseFarePrice" id="BaseFarePrice" hidden />
+    </div>
+
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <br />
-    <button type="submit" class="btn btn-primary">Book</button>
+    <button type="button" onclick="calculateFare()">Calculate Price</button>
+
+    <div id="fareResult" style="margin-top:10px;"></div>
+
+    <button type="submit" class="btn btn-primary" id="payButton" style="display:none;">Pay</button>
 </form>
 
 @section Scripts {
@@ -132,5 +144,41 @@
         document.addEventListener("DOMContentLoaded", () => {
             toggleDropOffInput(true);
         });
+    </script>
+
+    <script>
+        const gatewayBaseUrl = '@ViewBag.GatewayBaseUrl';
+        console.log(gatewayBaseUrl);
+
+        async function calculateFare() {
+            const payload = {
+                cabType: document.getElementById("CabType").value,
+                passengerCount: parseInt(document.getElementById("PassengerCount").value),
+                dateTime: document.getElementById("RideDateTime").value,
+                startLocation: document.getElementById("StartLocation").value,
+                endLocation: document.getElementById("EndLocation").value,
+                isDiscountEligible: false 
+            };
+
+            const response = await fetch(`${gatewayBaseUrl}/fareestimation/estimate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                document.getElementById("fareResult").innerText = "Failed to calculate fare.";
+                return;
+            }
+
+            const result = await response.json();
+            document.getElementById("fareResult").innerText = `Total Price: €${result.totalPrice}`;
+            document.getElementById("TotalPrice").value = result.totalPrice;
+            document.getElementById("BaseFarePrice").value = result.baseFarePrice;
+
+            //show button
+            document.getElementById("payButton").style.display = "inline-block";
+        }
+
     </script>
 }

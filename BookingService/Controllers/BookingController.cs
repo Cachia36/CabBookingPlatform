@@ -51,15 +51,16 @@ namespace BookingService.Controllers
                         BookingId = booking.Id!,
                         StartLocation = booking.StartLocation,
                         EndLocation = booking.EndLocation,
-                        DateTime = booking.DateTime,
+                        DateTime = booking.RideDateTime,
                         PassengerCount = booking.PassengerCount,
-                        CabType = booking.CabType
+                        CabType = booking.CabType,
+                        TotalPrice = booking.TotalPrice
                     });
 
                     Console.WriteLine("CabReadyEvent sent after delay");
                 });
 
-                return Ok("Booking created successfully");
+                return Ok(new { bookingId = booking.Id, message = "Booking created successfully" });
             }
             catch (Exception ex)
             {
@@ -72,7 +73,7 @@ namespace BookingService.Controllers
         {
             var now = DateTime.UtcNow;
             var bookings = await _context.Bookings
-                .Find(b => b.UserId == userId && b.DateTime >= now)
+                .Find(b => b.UserId == userId && b.RideDateTime >= now)
                 .ToListAsync();
             return Ok(bookings);
         }
@@ -82,7 +83,7 @@ namespace BookingService.Controllers
         {
             var now = DateTime.UtcNow;
             var bookings = await _context.Bookings
-                .Find(b => b.UserId == userId && b.DateTime < now)
+                .Find(b => b.UserId == userId && b.RideDateTime < now)
                 .ToListAsync();
 
             return Ok(bookings);

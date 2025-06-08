@@ -17,6 +17,9 @@ namespace GatewayAPI.Services
         {
             var client = _factory.CreateClient();
             var baseUrl = _config[$"Services:{serviceKey}"];
+            var url = $"{baseUrl}/{endpoint}";
+            Console.WriteLine($"Proxying to: {url}");
+
             var request = new HttpRequestMessage(method, $"{baseUrl}/{endpoint}");
 
             if(data != null)

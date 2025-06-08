@@ -24,12 +24,6 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
 
                         @if (isLoggedIn)
                         {
@@ -37,22 +31,19 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="ViewAccount">Account details</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Inbox">Inbox</a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Booking" asp-action="CreateBooking">Book a cab</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Booking" asp-action="Bookings">Your Bookings</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Booking" asp-action="Bookings">Current Bookings</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Booking" asp-action="BookingHistory">Booking history</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="FavouriteLocation" asp-action="AddFavouriteLocation">Save a location</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="FavouriteLocation" asp-action="FavouriteLocations">Favourite Locations</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="FavouriteLocation" asp-action="FavouriteLocations">View your favourite locations</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Payment" asp-action="PaymentHistory">Payment History</a>
                             </li>
                         }
 

@@ -12,6 +12,6 @@ namespace PaymentService.Data
             var client = new MongoClient(config.GetConnectionString("MongoDb"));
             _database = client.GetDatabase("CabBookingDb_Payment");
         }
-        public IMongoCollection<Payment> Payments => _database.GetCollection<Payment>("Payments");
+        public IMongoCollection<PaymentModel> Payments => _database.GetCollection<PaymentModel>("Payments");
     }
 }

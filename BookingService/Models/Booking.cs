@@ -11,8 +11,10 @@ namespace BookingService.Models
         public string UserId { get; set; } = string.Empty;
         public string StartLocation { get; set; } = string.Empty;
         public string EndLocation { get; set; } = string.Empty;
-        public DateTime DateTime { get; set; }
+        public DateTime RideDateTime { get; set; }
         public int PassengerCount { get; set; }
-        public string CabType { get; set; } = string.Empty; 
+        public string CabType { get; set; } = string.Empty;
+        public float BaseFarePrice { get; set; }
+        public float TotalPrice {  get; set; }
     }
 }

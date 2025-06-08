@@ -1,4 +1,6 @@
-﻿namespace Shared.Contracts
+﻿using Microsoft.AspNetCore.Routing.Constraints;
+
+namespace Shared.Contracts
 {
     public class CabReadyEvent
     {
@@ -9,5 +11,6 @@
         public DateTime DateTime { get; set; }
         public int PassengerCount {  get; set; }
         public string CabType {  get; set; }
+        public float TotalPrice { get; set; }
     }
 }

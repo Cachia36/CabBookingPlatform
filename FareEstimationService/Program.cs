@@ -8,6 +8,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<FareEstimationService.Services.FareEstimationService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 
