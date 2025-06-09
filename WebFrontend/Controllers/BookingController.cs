@@ -9,11 +9,13 @@ namespace WebFrontend.Controllers
     {
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly ILogger<BookingController> _logger;
 
-        public BookingController(IHttpClientFactory factory, IConfiguration config)
+        public BookingController(IHttpClientFactory factory, IConfiguration config, ILogger<BookingController> logger)
         {
             _httpClient = factory.CreateClient();
             _config = config;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -23,8 +25,35 @@ namespace WebFrontend.Controllers
             if (string.IsNullOrEmpty(userId))
                 return RedirectToAction("Login", "Account");
 
-            //Retrieve Saved Locations
+            //Retrieve isDiscountEligible
             var baseUrl = _config["GatewayService:BaseUrl"];
+
+            var userResponse = await _httpClient.GetAsync($"{baseUrl}/customer/{userId}");
+            if (userResponse.IsSuccessStatusCode)
+            {
+                var json = await userResponse.Content.ReadAsStringAsync();
+                var user = JsonSerializer.Deserialize<UserDto>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+
+                if (user != null)
+                {
+                    _logger.LogInformation($"HasReceivedDiscount: {user.HasReceivedDiscount}");
+                    bool HasReceivedDiscount = user.HasReceivedDiscount;
+                    ViewBag.HasReceivedDiscount = HasReceivedDiscount;
+                }
+            }
+            else
+            {
+                var errorDetails = await userResponse.Content.ReadAsStringAsync();
+                _logger.LogError("Failed to retrieve user info from {Url}. StatusCode: {Code}, Body: {Body}",
+                    $"{baseUrl}/customer/{userId}", userResponse.StatusCode, errorDetails);
+
+                ViewBag.HasReceivedDiscount = false;
+            }
+
+            //Retrieve Saved Locations
             ViewBag.GatewayBaseUrl = baseUrl;
 
             var SavedLocationsResponse = await _httpClient.GetAsync($"{baseUrl}/Location/{userId}");

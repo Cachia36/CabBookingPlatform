@@ -157,10 +157,10 @@
                 dateTime: document.getElementById("RideDateTime").value,
                 startLocation: document.getElementById("StartLocation").value,
                 endLocation: document.getElementById("EndLocation").value,
-                isDiscountEligible: false 
+                isDiscountEligible: @(ViewBag.HasReceivedDiscount != null ? ViewBag.HasReceivedDiscount.ToString().ToLowerInvariant() : "false")
             };
 
-            const response = await fetch(`${gatewayBaseUrl}/fareestimation/estimate`, {
+            const response = await fetch(`${gatewayBaseUrl}/fareEstimation/estimate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
