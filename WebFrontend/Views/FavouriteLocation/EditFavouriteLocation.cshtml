@@ -1,0 +1,17 @@
+﻿@model WebFrontend.Models.Location
+
+<h2>Edit Favourite Location</h2>
+
+<form asp-action="EditFavouriteLocation" method="post">
+    <input asp-for="Id" hidden/>
+
+    <div class="form-group">
+        <label asp-for="City"></label>
+        <input asp-for="City" class="form-control" />
+        <span asp-validation-for="City" class="text-danger"></span>
+    </div>
+
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>

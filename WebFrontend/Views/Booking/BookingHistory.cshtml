@@ -1,0 +1,35 @@
+﻿@model List<WebFrontend.Models.BookingViewModel>
+@using System.Text.Json;
+
+<h2>Booking History</h2>
+
+@if (!Model.Any())
+{
+    <p>This user has never made any bookings.</p>
+}
+else
+{
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Date</th>
+                <th>Cab Type</th>
+                <th>Passengers</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var booking in Model)
+            {
+                <tr>
+                    <td>@booking.StartLocation</td>
+                    <td>@booking.EndLocation</td>
+                    <td>@booking.RideDateTime.ToString("g")</td>
+                    <td>@booking.CabType</td>
+                    <td>@booking.PassengerCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

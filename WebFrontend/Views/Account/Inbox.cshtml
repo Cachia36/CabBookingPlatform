@@ -1,0 +1,21 @@
+﻿@model WebFrontend.Models.InboxViewModel
+
+@if (!Model.Messages.Any())
+{
+    <div class="alert alert-info">No messages in your inbox.</div>
+}
+else
+{
+    <div class="container py-5">
+        <h2 class="mb-4 fw-bold">Inbox Messages</h2>
+
+        <ul class="list-group shadow">
+                @foreach (var message in Model.Messages)
+                {
+                    <li class="list-group-item">
+                        <pre class="mb-0">@message</pre>
+                    </li>
+                }
+        </ul>
+    </div> 
+}

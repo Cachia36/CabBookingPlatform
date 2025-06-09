@@ -1,0 +1,31 @@
+﻿@model List<WebFrontend.Models.Payment>
+@using System.Text.Json;
+
+<h2>Payment History</h2>
+
+@if (!Model.Any())
+{
+    <p>You have never made a payment</p>
+}
+else
+{
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>BookingId</th>
+                <th>TotalPrice</th>
+                <th>PaymentDate</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var payment in Model)
+            {
+                <tr>
+                    <td>@payment.BookingId</td>
+                    <td>@payment.TotalPrice</td>
+                    <td>@payment.PaymentDate.ToString("g")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

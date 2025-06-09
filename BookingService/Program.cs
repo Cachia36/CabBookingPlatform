@@ -14,14 +14,13 @@ builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host("cow.rmq2.cloudamqp.com", "yrsxyedd", h =>
         {
-            h.Username("guest");
-            h.Password("guest");
+            h.Username("yrsxyedd");
+            h.Password("AYvwR3QRo1Y9We-3ricXzS0r-4zseAYe");
         });
 
         cfg.UseDelayedMessageScheduler();
-
         cfg.ConfigureEndpoints(context);
     });
 });
@@ -32,11 +31,8 @@ builder.Logging.AddConsole();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
