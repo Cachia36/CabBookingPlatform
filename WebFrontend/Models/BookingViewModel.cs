@@ -7,12 +7,16 @@ namespace WebFrontend.Models
         [Required]
         public string UserId { get; set; }
         [Required]
+        [Display(Name = "Pick up location")]
         public string StartLocation { get; set; }
         [Required]
+        [Display(Name = "Drop off location")]
         public string EndLocation { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Date and Time is required.")]
+        [DataType(DataType.DateTime)]
         public DateTime RideDateTime {  get; set; }
-        [Required]
+        [Required(ErrorMessage = "Number of passengers is required.")]
+        [Range(1, 8, ErrorMessage = "Passengers must be between 1 and 8.")]
         public int PassengerCount {  get; set; }
         [Required]
         public string CabType {  get; set; }

@@ -20,21 +20,37 @@ namespace WebFrontend.Controllers
         private async Task<bool> SignUserInAsync(string email, string password)
         {
             var baseUrl = _config["GatewayService:BaseUrl"];
-            var response = await _httpClient.PostAsJsonAsync($"{baseUrl}/customer/login", new LoginViewModel { Email = email, Password = password });
+            var response = await _httpClient.PostAsJsonAsync($"{baseUrl}/customer/login", new LoginViewModel
+            {
+                Email = email,
+                Password = password
+            });
 
             if (!response.IsSuccessStatusCode)
+            {
+                // Optional: log or inspect response content for debugging
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Login failed: {response.StatusCode} - {errorContent}");
                 return false;
+            }
 
-            var rawJson = await response.Content.ReadAsStringAsync();
-            var loginResult = JsonSerializer.Deserialize<Dictionary<string, string>>(rawJson);
-            var userId = loginResult?["id"];
+            try
+            {
+                var loginResult = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+                if (loginResult == null || !loginResult.ContainsKey("id"))
+                    return false;
 
-            if (string.IsNullOrEmpty(userId))
+                HttpContext.Session.SetString("UserId", loginResult["id"]);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // JSON deserialization failed — probably because the backend returned plain text or malformed JSON
+                Console.WriteLine($"Failed to parse login result: {ex.Message}");
                 return false;
-
-            HttpContext.Session.SetString("UserId", userId);
-            return true;
+            }
         }
+
 
         [HttpGet]
         public IActionResult Login()
@@ -58,7 +74,7 @@ namespace WebFrontend.Controllers
                 return RedirectToAction("ViewAccount", "Account");
             }
 
-            ModelState.AddModelError(string.Empty, "Login failed");
+            ModelState.AddModelError(string.Empty, "Invalid email or password");
             return View(model);
         }
 

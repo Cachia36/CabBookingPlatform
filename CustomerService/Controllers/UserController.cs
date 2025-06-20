@@ -29,7 +29,7 @@ namespace CustomerService.Controllers
         public async Task<IActionResult> Login([FromBody] Models.LoginRequest login)
         {
             var user = await _context.Users.Find(u => u.Email == login.Email && u.Password == login.Password).FirstOrDefaultAsync();
-            if (user == null) return Unauthorized("Invalid Credentials");
+            if (user == null) return Unauthorized(new { error = "Invalid email or password" });
             return Ok(new { user.Id });
         }
 
