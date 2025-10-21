@@ -5,21 +5,21 @@ A distributed, event-driven cab booking system built using Microservices Archite
 ## 🌐 Live Deployment (Hosted on Microsoft Azure)
 
 ### 🔗 Frontend Web Application
-- 🌐 [https://cabbookingfrontendkc.azurewebsites.net/](https://cabbookingfrontendkc.azurewebsites.net/)
+- 🌐 [https://cabbookingfrontendkc.azurewebsites.net/](https://maintenance-page-gray-mu.vercel.app/)
 
 ### 🔌 Gateway API
 > Central entry point that routes client requests to the appropriate microservice.
-- 📍 [https://cabbooking-gateway-api.azurewebsites.net/swagger](https://cabbooking-gateway-api.azurewebsites.net/swagger)
+- 📍 [https://cabbooking-gateway-api.azurewebsites.net/swagger](https://maintenance-page-gray-mu.vercel.app/)
 
 ### 🧩 Microservices
 
 | Service             | Swagger Link                                                                 |
 |---------------------|-------------------------------------------------------------------------------|
-| Customer Service    | [https://cabbooking-customer-api.azurewebsites.net/swagger/index.html](https://cabbooking-customer-api.azurewebsites.net/swagger/index.html) |
-| Booking Service     | [https://cabbooking-booking-api.azurewebsites.net/swagger/index.html](https://cabbooking-booking-api.azurewebsites.net/swagger/index.html)     |
-| Fare Estimation     | [https://cabbooking-fare-api.azurewebsites.net/swagger/index.html](https://cabbooking-fare-api.azurewebsites.net/swagger/index.html)           |
-| Location Service    | [https://cabbooking-location-api.azurewebsites.net/swagger/index.html](https://cabbooking-location-api.azurewebsites.net/swagger/index.html)   |
-| Payment Service     | [https://cabbooking-payment-api.azurewebsites.net/swagger/index.html](https://cabbooking-payment-api.azurewebsites.net/swagger/index.html)     |
+| Customer Service    | [https://cabbooking-customer-api.azurewebsites.net/swagger/index.html](https://maintenance-page-gray-mu.vercel.app/) |
+| Booking Service     | [https://cabbooking-booking-api.azurewebsites.net/swagger/index.html](https://maintenance-page-gray-mu.vercel.app/)     |
+| Fare Estimation     | [https://cabbooking-fare-api.azurewebsites.net/swagger/index.html](https://maintenance-page-gray-mu.vercel.app/)           |
+| Location Service    | [https://cabbooking-location-api.azurewebsites.net/swagger/index.html](https://maintenance-page-gray-mu.vercel.app/)   |
+| Payment Service     | [https://cabbooking-payment-api.azurewebsites.net/swagger/index.html](https://maintenance-page-gray-mu.vercel.app/)     |
 
 ## 🛠️ Tech Stack
 
