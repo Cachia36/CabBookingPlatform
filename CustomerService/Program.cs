@@ -1,7 +1,9 @@
-using Shared.Contracts;
-using CustomerService.Data;
-using MassTransit;
 using CustomerService.Consumers;
+using CustomerService.Data;
+using CustomerService.Models;
+using MassTransit;
+using Shared.Contracts;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,8 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerExamplesFromAssemblyOf<User>();
+
 builder.Services.AddSingleton<MongoDbContext>();
 
 builder.Services.AddMassTransit(x =>
