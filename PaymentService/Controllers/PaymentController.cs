@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 using MongoDB.Driver;
 using PaymentService.Data;
 using PaymentService.Models;
+using PaymentService.Services;
 using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -17,27 +18,33 @@ namespace PaymentService.Controllers
         private readonly MongoDbContext _context;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        public PaymentController(MongoDbContext context, IHttpClientFactory httpClientFactory, IConfiguration config)
+        private readonly IBookingClient _bookingClient;
+
+        public PaymentController(MongoDbContext context, IHttpClientFactory httpClientFactory, IConfiguration config, IBookingClient bookingClient)
         {
             _context = context;
             _httpClient = httpClientFactory.CreateClient();
             _config = config;
+            _bookingClient = bookingClient;
         }
 
         [HttpPost("pay")]
-        public async Task<IActionResult> ProcessPayment([FromBody] PaymentModel model)
+        public async Task<IActionResult> ProcessPayment([FromBody] PaymentModel model, CancellationToken ct)
         {
-            
-            var baseUrl = _config["GatewayService:BaseUrl"];
+            var booking = await _bookingClient.GetByIdAsync(model.BookingId, ct);
+            if (booking is null) return NotFound("Booking not found");
+
+            if (model.TotalPrice != booking.TotalPrice)
+                return BadRequest("Invalid payment amount");
+
             var payment = new PaymentModel
             {
                 UserId = model.UserId,
                 BookingId = model.BookingId,
-                TotalPrice = model.TotalPrice
+                TotalPrice = booking.TotalPrice
             };
 
-            await _context.Payments.InsertOneAsync(payment);
-
+            await _context.Payments.InsertOneAsync(payment, cancellationToken: ct);
             return Ok(payment);
         }
 

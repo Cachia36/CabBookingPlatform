@@ -6,6 +6,7 @@ using MongoDB.Driver;
 using MassTransit;
 using System.Runtime.InteropServices;
 using MassTransit.Transports;
+using MongoDB.Bson;
 
 namespace BookingService.Controllers
 {
@@ -66,6 +67,28 @@ namespace BookingService.Controllers
             {
                 return StatusCode(500, $"Booking creation failed: {ex.Message}");
             }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBookingById(string id)
+        {
+            var booking = await _context.Bookings
+                .Find(b => b.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (booking is not null)
+                return Ok(booking);
+
+            if (ObjectId.TryParse(id, out var oid))
+            {
+                var filter = Builders<Booking>.Filter.Eq("_id", oid);
+                booking = await _context.Bookings.Find(filter).FirstOrDefaultAsync();
+
+                if (booking is not null)
+                    return Ok(booking);
+            }
+
+            return NotFound(new { message = "Booking not found.", id});
         }
 
         [HttpGet("current/{userId}")]

@@ -15,7 +15,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", builder =>
     {
         builder
-            .WithOrigins("https://cabbookingfrontendkc.azurewebsites.net") 
+            .WithOrigins("https://cabbookingfrontendkc.azurewebsites.net", "http://localhost:5000", "https://localhost:5000") 
             .AllowAnyMethod()
             .AllowAnyHeader();
     });

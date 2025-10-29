@@ -14,11 +14,7 @@ builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("cow.rmq2.cloudamqp.com", "yrsxyedd", h =>
-        {
-            h.Username("yrsxyedd");
-            h.Password("AYvwR3QRo1Y9We-3ricXzS0r-4zseAYe");
-        });
+        cfg.Host(new Uri("amqps://zylmqjtk:nbvVLBLRWjXh3FlIrEaYLFbYArWQlFa5@goose.rmq2.cloudamqp.com/zylmqjtk"));
 
         cfg.UseDelayedMessageScheduler();
         cfg.ConfigureEndpoints(context);

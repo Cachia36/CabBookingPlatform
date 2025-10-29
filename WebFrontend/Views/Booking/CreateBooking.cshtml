@@ -100,7 +100,7 @@
 
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <br />
-    <button type="button" onclick="calculateFare()">Calculate Price</button>
+    <button type="button" id="calcBtn" onclick="calculateFare()">Calculate Price</button>
 
     <div id="fareResult" style="margin-top:10px;"></div>
 
@@ -145,40 +145,119 @@
             toggleDropOffInput(true);
         });
     </script>
-
+        
     <script>
         const gatewayBaseUrl = '@ViewBag.GatewayBaseUrl';
-        console.log(gatewayBaseUrl);
+        function showMessage(msg) {
+          document.getElementById("fareResult").innerText = msg;
+        }
+
+        function validateInputs() {
+          const startLocation = document.getElementById("StartLocation").value.trim();
+          const endLocation   = document.getElementById("EndLocation").value.trim();
+          const dateTime      = document.getElementById("RideDateTime").value.trim();
+          const passengersStr = document.getElementById("PassengerCount").value.trim();
+          const passengers    = Number(passengersStr);
+
+          const errors = [];
+          if (!startLocation) errors.push("Pickup location is required.");
+          if (!endLocation)   errors.push("Drop-off location is required.");
+          if (!dateTime)      errors.push("Date and time are required.");
+          if (!passengersStr) errors.push("Passenger count is required.");
+          else if (!Number.isFinite(passengers) || passengers < 1) errors.push("Passenger count must be a positive number.");
+
+          return { ok: errors.length === 0, errors, startLocation, endLocation, dateTime, passengers };
+        }
 
         async function calculateFare() {
+          const calcBtn = document.getElementById("calcBtn");
+          const payBtn  = document.getElementById("payButton");
+
+          // reset UI
+          payBtn.style.display = "none";
+          payBtn.disabled = true;
+
+          // validate first
+          const v = validateInputs();
+          if (!v.ok) {
+            showMessage(v.errors.join(" "));
+            return;
+          }
+
+          calcBtn.innerText = "Calculating Price...";
+          calcBtn.disabled = true;
+
+          try {
             const payload = {
-                cabType: document.getElementById("CabType").value,
-                passengerCount: parseInt(document.getElementById("PassengerCount").value),
-                dateTime: document.getElementById("RideDateTime").value,
-                startLocation: document.getElementById("StartLocation").value,
-                endLocation: document.getElementById("EndLocation").value,
-                isDiscountEligible: @(ViewBag.HasReceivedDiscount != null ? ViewBag.HasReceivedDiscount.ToString().ToLowerInvariant() : "false")
+              cabType: document.getElementById("CabType").value,
+              passengerCount: v.passengers,                // guaranteed number
+              dateTime: v.dateTime,                        // non-empty
+              startLocation: v.startLocation,              // non-empty
+              endLocation: v.endLocation,                  // non-empty
+              isDiscountEligible: @(ViewBag.HasReceivedDiscount != null ? ViewBag.HasReceivedDiscount.ToString().ToLowerInvariant() : "false")
             };
 
             const response = await fetch(`${gatewayBaseUrl}/fareEstimation/estimate`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
             });
 
+            // handle non-OK with readable message
             if (!response.ok) {
-                document.getElementById("fareResult").innerText = "Failed to calculate fare.";
-                return;
+              let msg = "Failed to calculate fare.";
+              try {
+                const problem = await response.json(); // ASP.NET Core ProblemDetails/validation
+                if (problem?.title) msg = problem.title;
+                if (problem?.detail) msg += ` ${problem.detail}`;
+                if (problem?.errors) {
+                  const firstKey = Object.keys(problem.errors)[0];
+                  if (firstKey) msg += ` ${problem.errors[firstKey][0]}`;
+                }
+              } catch { /* ignore parse errors */ }
+              showMessage(msg);
+              return;
             }
 
             const result = await response.json();
+
+            // guard against missing totalPrice/baseFarePrice
+            if (result?.totalPrice == null || !Number.isFinite(Number(result.totalPrice))) {
+              showMessage("Fare response was missing a total price.");
+              return;
+            }
+
             document.getElementById("fareResult").innerText = `Total Price: €${result.totalPrice}`;
             document.getElementById("TotalPrice").value = result.totalPrice;
-            document.getElementById("BaseFarePrice").value = result.baseFarePrice;
+            document.getElementById("BaseFarePrice").value = result.baseFarePrice ?? "";
 
-            //show button
-            document.getElementById("payButton").style.display = "inline-block";
+            // show Pay
+            payBtn.style.display = "inline-block";
+            payBtn.disabled = false;
+          }
+          catch (err) {
+            console.error("Error calculating fare", err);
+            showMessage("Error calculating fare.");
+          }
+          finally {
+            calcBtn.innerText = "Calculate Price";
+            calcBtn.disabled = false;
+          }
         }
-
     </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const form = document.querySelector("form");
+          const payBtn = document.getElementById("payButton");
+
+          form.addEventListener("submit", () => {
+            if (payBtn) {
+              payBtn.innerText = "Paying...";
+              payBtn.disabled = true;
+            }
+          });
+        });
+    </script>
+
 }
