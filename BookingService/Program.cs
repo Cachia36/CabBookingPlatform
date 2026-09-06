@@ -4,17 +4,25 @@ using MassTransit;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 builder.Services.AddSingleton<MongoDbContext>();
+
+var rabbitMqUri = builder.Configuration["RabbitMq:Uri"];
+
+if (string.IsNullOrEmpty(rabbitMqUri))
+{
+    throw new InvalidOperationException("RabbitMQ connection string is missing.");
+}
+
 builder.Services.AddMassTransit(x =>
 {
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host(new Uri("amqps://zylmqjtk:nbvVLBLRWjXh3FlIrEaYLFbYArWQlFa5@goose.rmq2.cloudamqp.com/zylmqjtk"));
+        cfg.Host(new Uri(rabbitMqUri));
 
         cfg.UseDelayedMessageScheduler();
         cfg.ConfigureEndpoints(context);
