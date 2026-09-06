@@ -60,3 +60,13 @@ nunit-*.xml
 *.vspx
 *.vsidx
 *.vsscc
+
+# Deployment/build output
+publish/
+*.zip
+
+# Local environment/secrets
+.env
+.env.*
+**/appsettings.Local.json
+**/appsettings.Secrets.json
