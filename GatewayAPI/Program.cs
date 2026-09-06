@@ -10,14 +10,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<ProxyService>();
+var frontendOrigin = builder.Configuration["Cors:AllowedOrigin"];
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", builder =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        builder
-            .WithOrigins("https://cabbookingfrontendkc.azurewebsites.net", "http://localhost:5000", "https://localhost:5000") 
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+        if (!string.IsNullOrEmpty(frontendOrigin))
+        {
+            policy
+                .WithOrigins(frontendOrigin)
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        }
     });
 });
 
