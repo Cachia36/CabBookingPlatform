@@ -5,13 +5,13 @@ namespace WebFrontend.Models
     public class BookingViewModel
     {
         [Required]
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         [Required]
         [Display(Name = "Pick up location")]
-        public string StartLocation { get; set; }
+        public string StartLocation { get; set; } = string.Empty;
         [Required]
         [Display(Name = "Drop off location")]
-        public string EndLocation { get; set; }
+        public string EndLocation { get; set; } = string.Empty;
         [Required(ErrorMessage = "Date and Time is required.")]
         [DataType(DataType.DateTime)]
         public DateTime RideDateTime {  get; set; }
@@ -19,7 +19,7 @@ namespace WebFrontend.Models
         [Range(1, 8, ErrorMessage = "Passengers must be between 1 and 8.")]
         public int PassengerCount {  get; set; }
         [Required]
-        public string CabType {  get; set; }
+        public string CabType {  get; set; } = string.Empty;
         [Required]
         public float BaseFarePrice {  get; set; }
         [Required]

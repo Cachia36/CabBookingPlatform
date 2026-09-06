@@ -155,7 +155,12 @@ namespace WebFrontend.Controllers
             }
 
             var messages = await response.Content.ReadFromJsonAsync<List<string>>();
-            var model = new InboxViewModel { Messages = messages };
+
+            var model = new InboxViewModel
+            {
+                Messages = messages ?? new List<string>()
+            };
+
             return View(model);
         }
     }

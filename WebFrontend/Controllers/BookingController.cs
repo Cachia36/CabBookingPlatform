@@ -73,13 +73,21 @@ namespace WebFrontend.Controllers
 
             return View();
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> CreateBooking([FromForm] BookingViewModel model)
         {
+            var userId = HttpContext.Session.GetString("UserId");
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             if (!ModelState.IsValid)
             {
                 Console.WriteLine("ModelState is invalid:");
+
                 foreach (var entry in ModelState)
                 {
                     foreach (var error in entry.Value.Errors)
@@ -88,36 +96,43 @@ namespace WebFrontend.Controllers
                     }
                 }
 
-                var userId = HttpContext.Session.GetString("UserId");
                 await PopulateSavedLocations(userId);
                 return View(model);
             }
 
             var baseUrl = _config["GatewayService:BaseUrl"];
-            model.UserId = HttpContext.Session.GetString("UserId");
 
-            var bookingResponse = await _httpClient.PostAsJsonAsync($"{baseUrl}/booking/create", model);
+            model.UserId = userId;
+
+            var bookingResponse =
+                await _httpClient.PostAsJsonAsync($"{baseUrl}/booking/create", model);
 
             if (!bookingResponse.IsSuccessStatusCode)
             {
                 var error = await bookingResponse.Content.ReadAsStringAsync();
+
                 ModelState.AddModelError(string.Empty, $"Booking failed: {error}");
+
                 Console.WriteLine("Booking failed");
+
+                await PopulateSavedLocations(userId);
                 return View(model);
             }
 
-            var bookingResult = await bookingResponse.Content.ReadFromJsonAsync<BookingResponseModel>();
+            var bookingResult =
+                await bookingResponse.Content.ReadFromJsonAsync<BookingResponseModel>();
 
             if (bookingResult == null || string.IsNullOrEmpty(bookingResult.BookingId))
             {
                 TempData["Message"] = "Booking was created but no ID was returned.";
                 Console.WriteLine("Booking was created but no ID was returned");
+
                 return RedirectToAction("Bookings", "Booking");
             }
 
             var payment = new Payment
             {
-                UserId = model.UserId,
+                UserId = userId,
                 BookingId = bookingResult.BookingId,
                 TotalPrice = model.TotalPrice
             };
@@ -130,9 +145,10 @@ namespace WebFrontend.Controllers
                 return RedirectToAction("Bookings", "Booking");
             }
 
-            TempData["SuccessMessage"] = "Booking and payment completed successfully!";
-            return RedirectToAction("Bookings", "Booking");
+            TempData["SuccessMessage"] =
+                "Booking and payment completed successfully!";
 
+            return RedirectToAction("Bookings", "Booking");
         }
 
         public async Task<bool> CreatePaymentAsync(Payment payment)

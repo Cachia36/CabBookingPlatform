@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\CabBookingPlatform</DockerfileContext>
+    <UserSecretsId>23da10f9-75ba-4ca4-8160-54615b2f3a50</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

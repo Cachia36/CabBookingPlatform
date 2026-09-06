@@ -201,15 +201,14 @@ namespace WebFrontend.Controllers
             var root = doc.RootElement;
             var weatherVm = new WeatherViewModel
             {
-                City = root.GetProperty("location").GetProperty("name").GetString(),
-                LocalTime = root.GetProperty("location").GetProperty("localtime").GetString(),
-                Condition = root.GetProperty("current").GetProperty("condition").GetProperty("text").GetString(),
-                IconUrl = "https:" + root.GetProperty("current").GetProperty("condition").GetProperty("icon").GetString(),
+                City = root.GetProperty("location").GetProperty("name").GetString() ?? string.Empty,
+                LocalTime = root.GetProperty("location").GetProperty("localtime").GetString() ?? string.Empty,
+                Condition = root.GetProperty("current").GetProperty("condition").GetProperty("text").GetString() ?? string.Empty,
                 TemperatureC = root.GetProperty("current").GetProperty("temp_c").GetDouble(),
                 FeelsLikeC = root.GetProperty("current").GetProperty("feelslike_c").GetDouble(),
                 Humidity = root.GetProperty("current").GetProperty("humidity").GetInt32(),
                 WindKph = root.GetProperty("current").GetProperty("wind_kph").GetDouble(),
-                WindDir = root.GetProperty("current").GetProperty("wind_dir").GetString(),
+                WindDir = root.GetProperty("current").GetProperty("wind_dir").GetString() ?? string.Empty,
                 UvIndex = root.GetProperty("current").GetProperty("uv").GetDouble()
             };
 

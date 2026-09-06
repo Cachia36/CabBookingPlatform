@@ -14,16 +14,23 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerExamplesFromAssemblyOf<User>();
-
 builder.Services.AddSingleton<MongoDbContext>();
+
+var rabbitMqUri = builder.Configuration["RabbitMq:Uri"];
+
+if (string.IsNullOrEmpty(rabbitMqUri))
+{
+    throw new InvalidOperationException("RabbitMQ connection string is missing.");
+}
 
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<BookingCompletedConsumer>();
     x.AddConsumer<CabReadyConsumer>();
+
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host(new Uri("amqps://zylmqjtk:nbvVLBLRWjXh3FlIrEaYLFbYArWQlFa5@goose.rmq2.cloudamqp.com/zylmqjtk"));
+        cfg.Host(new Uri(rabbitMqUri));
 
         cfg.ReceiveEndpoint("BookingCompleted", e =>
         {
@@ -38,7 +45,6 @@ builder.Services.AddMassTransit(x =>
         cfg.UseDelayedMessageScheduler();
     });
 });
-
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

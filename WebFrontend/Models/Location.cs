@@ -13,6 +13,6 @@ namespace WebFrontend.Models
 
         [Required]
         [JsonPropertyName("city")]
-        public string City { get; set; }
+        public string City { get; set; } = string.Empty;
     }
 }

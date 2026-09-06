@@ -94,8 +94,9 @@ namespace LocationService.Controllers
         private async Task<(double lat, double lng)> GetCoordinatesAsync(string location)
         {
             string encodedLocation = Uri.EscapeDataString(location);
-            string apiKey = _config["OpenCage:Key"];
-            string url = $"https://api.opencagedata.com/geocode/v1/json?q={encodedLocation}&key={apiKey}";
+            string apiKey = _config["OpenCage:Key"]
+                ?? throw new InvalidOperationException("OpenCage API key is missing.");
+            string url = $"https://api.opencagedata.com/geocode/v1/json?q={encodedLocation}&key={apiKey}&countrycode=mt&limit=1";
 
             var response = await _httpClient.GetAsync(url);
             if (!response.IsSuccessStatusCode)
