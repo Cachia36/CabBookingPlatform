@@ -1,14 +1,80 @@
-version: '3.8'
-
 services:
-  rabbitmq:
-    image: pivotalrabbitmq/rabbitmq-delayed-message-exchange
-    container_name: rabbitmq
-    ports:
-      - 5672:5672
-      - 15672:15672
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
 
-volumes:
-  rabbitmq_data:
+  customer:
+    build:
+      context: .
+      args:
+        SERVICE: CustomerService
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__MongoDb: ${MONGODB_URI}
+      RabbitMq__Uri: ${RABBITMQ_URI}
+
+  booking:
+    build:
+      context: .
+      args:
+        SERVICE: BookingService
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__MongoDb: ${MONGODB_URI}
+      RabbitMq__Uri: ${RABBITMQ_URI}
+
+  fare:
+    build:
+      context: .
+      args:
+        SERVICE: FareEstimationService
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      RapidApi__Key: ${RAPIDAPI_KEY}
+      OpenCage__Key: ${OPENCAGE_KEY}
+
+  location:
+    build:
+      context: .
+      args:
+        SERVICE: LocationService
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__MongoDb: ${MONGODB_URI}
+      RapidApi__Key: ${RAPIDAPI_KEY}
+      OpenCage__Key: ${OPENCAGE_KEY}
+
+  payment:
+    build:
+      context: .
+      args:
+        SERVICE: PaymentService
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__MongoDb: ${MONGODB_URI}
+      Services__GatewayApi__BaseUrl: http://gateway:8080
+
+  gateway:
+    build:
+      context: .
+      args:
+        SERVICE: GatewayAPI
+    ports:
+      - "7000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Services__Customer: http://customer:8080
+      Services__Booking: http://booking:8080
+      Services__Payment: http://payment:8080
+      Services__Location: http://location:8080
+      Services__FareEstimation: http://fare:8080
+      Cors__AllowedOrigin: http://localhost:5000
+
+  frontend:
+    build:
+      context: .
+      args:
+        SERVICE: WebFrontend
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      GatewayService__BaseUrl: http://gateway:8080/api/gateway
+      GatewayService__PublicBaseUrl: http://localhost:7000/api/gateway

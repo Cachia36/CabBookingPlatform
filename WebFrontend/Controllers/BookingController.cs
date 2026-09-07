@@ -54,7 +54,8 @@ namespace WebFrontend.Controllers
             }
 
             //Retrieve Saved Locations
-            ViewBag.GatewayBaseUrl = baseUrl;
+            ViewBag.GatewayBaseUrl =
+                _config["GatewayService:PublicBaseUrl"] ?? baseUrl;
 
             var SavedLocationsResponse = await _httpClient.GetAsync($"{baseUrl}/Location/{userId}");
 

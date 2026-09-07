@@ -9,7 +9,7 @@ namespace PaymentService.Services
 
         public async Task<BookingDto?> GetByIdAsync(string id, CancellationToken ct = default)
         {
-            var resp = await _http.GetAsync($"/api/gateway/booking/{id}", ct);
+            var resp = await _http.GetAsync($"/booking/{id}", ct);
             if (resp.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
             resp.EnsureSuccessStatusCode();
             return await resp.Content.ReadFromJsonAsync<BookingDto>(cancellationToken: ct);
