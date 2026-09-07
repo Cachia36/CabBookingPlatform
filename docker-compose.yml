@@ -49,7 +49,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__MongoDb: ${MONGODB_URI}
-      Services__GatewayApi__BaseUrl: http://gateway:8080
+      Services__GatewayApi__BaseUrl: http://gateway:8080/api/gateway
 
   gateway:
     build:
@@ -65,7 +65,7 @@ services:
       Services__Payment: http://payment:8080
       Services__Location: http://location:8080
       Services__FareEstimation: http://fare:8080
-      Cors__AllowedOrigin: http://localhost:5000
+      Cors__AllowedOrigin: ${PUBLIC_FRONTEND_URL}
 
   frontend:
     build:
@@ -77,4 +77,4 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       GatewayService__BaseUrl: http://gateway:8080/api/gateway
-      GatewayService__PublicBaseUrl: http://localhost:7000/api/gateway
+      GatewayService__PublicBaseUrl: ${PUBLIC_GATEWAY_URL}
