@@ -49,7 +49,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__MongoDb: ${MONGODB_URI}
-      Services__GatewayApi__BaseUrl: http://gateway:8080/api/gateway
+      Services__GatewayApi__BaseUrl: http://gateway:8080/api/gateway/
 
   gateway:
     build:
