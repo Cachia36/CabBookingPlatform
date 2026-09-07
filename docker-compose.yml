@@ -1,6 +1,7 @@
 services:
 
   customer:
+    restart: unless-stopped
     build:
       context: .
       args:
@@ -11,6 +12,7 @@ services:
       RabbitMq__Uri: ${RABBITMQ_URI}
 
   booking:
+    restart: unless-stopped
     build:
       context: .
       args:
@@ -21,6 +23,7 @@ services:
       RabbitMq__Uri: ${RABBITMQ_URI}
 
   fare:
+    restart: unless-stopped
     build:
       context: .
       args:
@@ -31,6 +34,7 @@ services:
       OpenCage__Key: ${OPENCAGE_KEY}
 
   location:
+    restart: unless-stopped
     build:
       context: .
       args:
@@ -42,6 +46,7 @@ services:
       OpenCage__Key: ${OPENCAGE_KEY}
 
   payment:
+    restart: unless-stopped
     build:
       context: .
       args:
@@ -52,6 +57,7 @@ services:
       Services__GatewayApi__BaseUrl: http://gateway:8080/api/gateway/
 
   gateway:
+    restart: unless-stopped
     build:
       context: .
       args:
@@ -68,6 +74,7 @@ services:
       Cors__AllowedOrigin: ${PUBLIC_FRONTEND_URL}
 
   frontend:
+    restart: unless-stopped
     build:
       context: .
       args:
